@@ -10,5 +10,6 @@ namespace CommonLibrary.Interface
         Task<string> FileToBase64(string filePath);
         Task<byte[]> FileToByte(string filePath);
         FileStream DownloadFile(string filePath);
+        string GetFileUploadPath() ;
     }
 }

@@ -12,12 +12,14 @@ namespace CommonLibrary.Service
         private readonly string _fileUploadPath = Path.Combine(Directory.GetCurrentDirectory(), "Files");
 
 
+        public string GetFileUploadPath() {  return _fileUploadPath; }
+
         public async Task<FileUploadDto> UploadFile(string FileName, IFormFile FormFile, string? FileUploadPath = null)
         {
             if (FileUploadPath == null)
                 FileUploadPath = _fileUploadPath;
 
-            var filePath = Path.Combine(FileUploadPath, FormFile.FileName);
+            var filePath = Path.Combine(FileUploadPath, FileName);
 
             //檢查目錄
             if (!Directory.Exists(_fileUploadPath))

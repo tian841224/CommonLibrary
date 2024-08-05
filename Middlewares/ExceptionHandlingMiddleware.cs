@@ -22,7 +22,7 @@ namespace admin_backend.Middleware
         {
             string STATICS_PATH = "/statics";
             string SWAGGER_PATH = "/swagger";
-            string FILE_PATH = "/file";
+            string FILE_PATH = "/getfile";
             var notConvertUrlList = new List<string>() { STATICS_PATH, SWAGGER_PATH, FILE_PATH };
 
             if (context.Request.Path.HasValue && notConvertUrlList.Any(p => context.Request.Path.Value.ToLower().Contains(p)))
