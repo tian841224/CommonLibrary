@@ -11,5 +11,6 @@ namespace CommonLibrary.Interface
         Task<byte[]> FileToByte(string filePath);
         FileStream DownloadFile(string filePath);
         string GetFileUploadPath() ;
+        string GetFilePath(string fileName);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using CommonLibrary.DTOs;
 using CommonLibrary.Interface;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace CommonLibrary.Service
 {
@@ -10,6 +11,14 @@ namespace CommonLibrary.Service
     public class FileService : IFileService
     {
         private readonly string _fileUploadPath = Path.Combine(Directory.GetCurrentDirectory(), "Files");
+        private readonly ILogger<FileService> _log;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public FileService(ILogger<FileService> log, IHttpContextAccessor httpContextAccessor)
+        {
+            _log = log;
+            _httpContextAccessor = httpContextAccessor;
+        }
 
 
         public string GetFileUploadPath() {  return _fileUploadPath; }
@@ -98,6 +107,20 @@ namespace CommonLibrary.Service
         {
             var file = File.OpenRead(filePath);
             return file;
+        }
+
+        /// <summary>
+        /// 取得檔案連結
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public string GetFilePath(string fileName)
+        {
+            var request = _httpContextAccessor.HttpContext.Request;
+            var domain = $"{request.Scheme}://{request.Host}";
+            var newPath = $"/file/{fileName}";
+
+            return domain + newPath;
         }
     }
 }
