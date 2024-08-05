@@ -5,19 +5,19 @@ namespace CommonLibrary.DTOs
 {
     public class DefaultResponseDto
     {
-        public int Id { get; protected set; }
+        public int Id { get; set; }
 
         /// <summary>
         /// 建立日期
         /// </summary>
         [JsonConverter(typeof(DateTimeConverter))]
 
-        public DateTime CreateTime { get; protected set; } = DateTime.UtcNow;
+        public DateTime CreateTime { get;  set; } = DateTime.UtcNow;
 
         /// <summary>
         /// 更新時間
         /// </summary>
         [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime UpdateTime { get; protected set; } = DateTime.UtcNow;
+        public DateTime UpdateTime { get;  set; } = DateTime.UtcNow;
     }
 }

@@ -1,37 +1,41 @@
 ﻿using CommonLibrary.DTOs;
-using Microsoft.EntityFrameworkCore;
 
 namespace CommonLibrary.Extensions
 {
     public static class PagedOperationExtensions
     {
-        public static async Task<PagedResult<T>> GetPagedAsync<T>(this IQueryable<T> query, PagedOperationDto dto)
+        public static PagedResult<T> GetPaged<T>(this IQueryable<T> query, PagedOperationDto dto)
         {
+            var skip = (dto.PageNumber - 1) * dto.PageSize;
+            var items = query.Skip(skip).Take(dto.PageSize).ToList();
+
             var result = new PagedResult<T>
             {
-                PageNumber = dto.PageNumber,
+                CurrentPage = dto.PageNumber,
                 PageSize = dto.PageSize,
-                TotalCount = await query.CountAsync()
+                CurrentPageCount = items.Count,
+                Items = items
             };
 
-            var skip = (dto.PageNumber - 1) * dto.PageSize;
-            result.Items = await query.Skip(skip).Take(dto.PageSize).ToListAsync();
-
+            result.TotalCount = items.Count;
+            result.TotalPages = (int)Math.Ceiling(result.TotalCount / (double)dto.PageSize);
             return result;
         }
 
         public static PagedResult<T> GetPaged<T>(this List<T> list, PagedOperationDto dto)
         {
+            var skip = (dto.PageNumber - 1) * dto.PageSize;
+            var items = list.Skip(skip).Take(dto.PageSize).ToList();
+
             var result = new PagedResult<T>
             {
-                PageNumber = dto.PageNumber,
+                CurrentPage = dto.PageNumber,
                 PageSize = dto.PageSize,
-                TotalCount = list.Count
+                CurrentPageCount = items.Count,
+                Items = items
             };
-
-            var skip = (dto.PageNumber - 1) * dto.PageSize;
-            result.Items = list.Skip(skip).Take(dto.PageSize).ToList();
-
+            result.TotalCount = list.Count;
+            result.TotalPages = (int)Math.Ceiling(result.TotalCount / (double)dto.PageSize);
             return result;
         }
     }
