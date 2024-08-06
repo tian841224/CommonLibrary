@@ -1,5 +1,5 @@
 ﻿using CommonLibrary.DTOs;
-using CommonLibrary.Interface;
+using CommonLibrary.Interfaces;
 using IdentityModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
-namespace CommonLibrary.Service
+namespace CommonLibrary.Services
 {
     /// <summary>
     /// 身分認證

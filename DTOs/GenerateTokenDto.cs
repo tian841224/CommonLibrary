@@ -5,7 +5,7 @@
     /// </summary>
     public class GenerateTokenDto
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// 帳號
