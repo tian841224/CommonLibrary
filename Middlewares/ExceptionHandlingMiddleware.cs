@@ -6,7 +6,7 @@ using System.Net;
 using System.Text;
 using System.Text.Json;
 
-namespace admin_backend.Middleware
+namespace CommonLibrary.Middlewares
 {
     public class ExceptionHandling
     {
@@ -22,8 +22,9 @@ namespace admin_backend.Middleware
         {
             string STATICS_PATH = "/statics";
             string SWAGGER_PATH = "/swagger";
-            string FILE_PATH = "/getfile";
-            var notConvertUrlList = new List<string>() { STATICS_PATH, SWAGGER_PATH, FILE_PATH };
+            string FILE_PATH = "/file";
+            string IMAGE_PATH = "/image";
+            var notConvertUrlList = new List<string>() { STATICS_PATH, SWAGGER_PATH, FILE_PATH, IMAGE_PATH };
 
             if (context.Request.Path.HasValue && notConvertUrlList.Any(p => context.Request.Path.Value.ToLower().Contains(p)))
             {
