@@ -1,9 +1,9 @@
 ﻿using CommonLibrary.DTOs;
-using CommonLibrary.Interface;
+using CommonLibrary.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace CommonLibrary.Service
+namespace CommonLibrary.Services
 {
     /// <summary>
     /// 檔案處理
@@ -21,7 +21,7 @@ namespace CommonLibrary.Service
         }
 
 
-        public string GetFileUploadPath() {  return _fileUploadPath; }
+        public string GetFileUploadPath() { return _fileUploadPath; }
 
         public async Task<FileUploadDto> UploadFile(string FileName, IFormFile FormFile, string? FileUploadPath = null)
         {
@@ -114,11 +114,11 @@ namespace CommonLibrary.Service
         /// </summary>
         /// <param name="fileName"></param>
         /// <returns></returns>
-        public string GetFilePath(string fileName)
+        public string GetFile(string fileName,string? type = "file")
         {
-            var request = _httpContextAccessor.HttpContext.Request;
+            var request = _httpContextAccessor.HttpContext!.Request;
             var domain = $"{request.Scheme}://{request.Host}";
-            var newPath = $"/file/{fileName}";
+            var newPath = $"/{type}/{fileName}";
 
             return domain + newPath;
         }

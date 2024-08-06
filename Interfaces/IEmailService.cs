@@ -1,6 +1,6 @@
 ﻿using CommonLibrary.DTOs;
 
-namespace CommonLibrary.Interface
+namespace CommonLibrary.Interfaces
 {
     public interface IEmailService
     {

@@ -1,7 +1,7 @@
 ﻿using CommonLibrary.DTOs;
 using Microsoft.AspNetCore.Http;
 
-namespace CommonLibrary.Interface
+namespace CommonLibrary.Interfaces
 {
     public interface IFileService
     {
@@ -10,7 +10,7 @@ namespace CommonLibrary.Interface
         Task<string> FileToBase64(string filePath);
         Task<byte[]> FileToByte(string filePath);
         FileStream DownloadFile(string filePath);
-        string GetFileUploadPath() ;
-        string GetFilePath(string fileName);
+        string GetFileUploadPath();
+        string GetFile(string fileName, string? type = "file");
     }
 }

@@ -1,9 +1,9 @@
 ﻿using CommonLibrary.DTOs;
-using CommonLibrary.Interface;
+using CommonLibrary.Interfaces;
 using System.Net;
 using System.Net.Mail;
 
-namespace CommonLibrary.Service
+namespace CommonLibrary.Services
 {
     public class EmailService : IEmailService
     {
