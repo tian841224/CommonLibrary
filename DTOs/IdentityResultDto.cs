@@ -11,5 +11,7 @@
         public string Account { get; set; } = string.Empty;
 
         public int RoleId { get; set; }
+
+        public string Photo { get; set; } = string.Empty;
     }
 }

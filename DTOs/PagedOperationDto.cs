@@ -1,4 +1,6 @@
-﻿namespace CommonLibrary.DTOs
+﻿using CommonLibrary.Enum;
+
+namespace CommonLibrary.DTOs
 {
     public class PagedOperationDto
     {
@@ -14,6 +16,6 @@
 
         public string OrderBy { get; set; } = "Id";
 
-        //public int Desc { get; set; }
+        public SortTypeEnum Desc { get; set; } = SortTypeEnum.Desc;
     }
 }

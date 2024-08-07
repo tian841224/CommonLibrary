@@ -6,7 +6,7 @@ namespace CommonLibrary.Extensions
     {
         public List<T> Items { get; set; }
 
-        public PageResponseDto Page { get; set; }
+        public PageResponseDto Page { get; set; } = new PageResponseDto();
 
         public PagedResult()
         {

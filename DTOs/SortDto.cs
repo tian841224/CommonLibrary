@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace CommonLibrary.Extensions
+namespace CommonLibrary.DTOs
 {
     public class SortDto
     {
