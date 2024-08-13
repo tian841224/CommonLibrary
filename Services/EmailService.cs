@@ -7,25 +7,18 @@ namespace CommonLibrary.Services
 {
     public class EmailService : IEmailService
     {
-        public void SendEmail(SendEmailDto dto)
+        public async Task SendEmail(SendEmailDto dto)
         {
-            using (var client = new SmtpClient(dto.Host))
+            var mailMessage = dto.MailMessage;
+            mailMessage.To.Add(dto.Recipient);
+
+            using var smtpClient = new SmtpClient(dto.Host, dto.Port)
             {
-                client.Port = dto.Port;
-                client.Credentials = new NetworkCredential(dto.Account, dto.Password);
-                client.EnableSsl = dto.EnableSsl;
+                Credentials = new NetworkCredential(dto.Account, dto.Password),
+                EnableSsl = dto.EnableSsl
+            };
 
-                //var mailMessage = new MailMessage
-                //{
-                //    From = new MailAddress($"{dto.Account}@{dto.Host}", dto.DisplayName),
-                //    Subject = dto.Subject,
-                //    Body = dto.Body,
-                //    IsBodyHtml = true,
-                //};
-                dto.MailMessage.To.Add(dto.Recipient);
-
-                client.Send(dto.MailMessage);
-            }
+            await smtpClient.SendMailAsync(mailMessage);
         }
     }
 }
