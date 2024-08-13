@@ -15,24 +15,20 @@ namespace CommonLibrary.Extensions
                 var enumType = context.Type;
                 var enumValues = System.Enum.GetValues(enumType);
 
-                // 描述加入EnumMember
-                var chineseDescriptions = enumValues.Cast<object>()
+                // 描述增加完整說明
+                var fullDescriptions = enumValues.Cast<object>()
                     .Select(enumValue =>
                     {
                         var memberInfo = enumType.GetMember(enumValue.ToString()).FirstOrDefault();
                         var enumMemberAttribute = memberInfo?.GetCustomAttribute<EnumMemberAttribute>();
                         var description = enumMemberAttribute?.Value ?? enumValue.ToString();
-                        return $"{Convert.ToInt32(enumValue)} = {description}";
+                        return $"{Convert.ToInt32(enumValue)} = {description} ({enumValue})";
                     });
-                schema.Description = string.Join(", ", chineseDescriptions);
+                schema.Description = string.Join(", ", fullDescriptions);
 
-                // 枚舉列表加入參數名稱
+                // 枚舉值只包含數字
                 schema.Enum = enumValues.Cast<object>()
-                    .Select(enumValue =>
-                    {
-                        var enumValueInt = Convert.ToInt32(enumValue);
-                        return new OpenApiString($"{enumValueInt} = {enumValue}");
-                    })
+                    .Select(enumValue => new OpenApiInteger(Convert.ToInt32(enumValue)))
                     .Cast<IOpenApiAny>()
                     .ToList();
 
