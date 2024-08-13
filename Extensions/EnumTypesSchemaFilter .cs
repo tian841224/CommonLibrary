@@ -12,24 +12,36 @@ namespace CommonLibrary.Extensions
         {
             if (context.Type.IsEnum)
             {
-                schema.Enum.Clear();
                 var enumType = context.Type;
                 var enumValues = System.Enum.GetValues(enumType);
 
-                foreach (var enumValue in enumValues)
+                // 描述加入EnumMember
+                var chineseDescriptions = enumValues.Cast<object>()
+                    .Select(enumValue =>
+                    {
+                        var memberInfo = enumType.GetMember(enumValue.ToString()).FirstOrDefault();
+                        var enumMemberAttribute = memberInfo?.GetCustomAttribute<EnumMemberAttribute>();
+                        var description = enumMemberAttribute?.Value ?? enumValue.ToString();
+                        return $"{Convert.ToInt32(enumValue)} = {description}";
+                    });
+                schema.Description = string.Join(", ", chineseDescriptions);
+
+                // 枚舉列表加入參數名稱
+                schema.Enum = enumValues.Cast<object>()
+                    .Select(enumValue =>
+                    {
+                        var enumValueInt = Convert.ToInt32(enumValue);
+                        return new OpenApiString($"{enumValueInt} = {enumValue}");
+                    })
+                    .Cast<IOpenApiAny>()
+                    .ToList();
+
+                // 設定 Example 為純數字
+                if (schema.Enum.Any())
                 {
-                    var memberInfo = enumType.GetMember(enumValue.ToString()).FirstOrDefault();
-                    var enumMemberAttribute = memberInfo?.GetCustomAttribute<EnumMemberAttribute>();
-                    var description = enumMemberAttribute?.Value ?? enumValue.ToString();
-
-                    var enumValueInt = Convert.ToInt32(enumValue);
-                    schema.Enum.Add(new OpenApiString($"{enumValueInt} = {description}"));
+                    schema.Example = new OpenApiInteger(Convert.ToInt32(enumValues.GetValue(0)));
                 }
-
-                //修改註解
-                //schema.Description = string.Join(", ", schema.Enum.Select(x => x.ToString()));
             }
-
         }
     }
 }
