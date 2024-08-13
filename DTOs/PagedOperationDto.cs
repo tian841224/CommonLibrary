@@ -16,6 +16,6 @@ namespace CommonLibrary.DTOs
 
         public string OrderBy { get; set; } = "Id";
 
-        public SortTypeEnum Desc { get; set; } = SortTypeEnum.Desc;
+        public SortTypeEnum Desc { get; set; } = SortTypeEnum.Asc;
     }
 }
