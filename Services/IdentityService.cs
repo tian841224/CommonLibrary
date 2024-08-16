@@ -42,13 +42,16 @@ namespace CommonLibrary.Services
             {
                 claimsDto = new ClaimDto
                 {
-                    RoleId = JwtClaims.FirstOrDefault(c => c.Type == "RoleId")?.Value ?? string.Empty,
-                    RoleNane = JwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value ?? string.Empty,
                     UserId = JwtClaims.FirstOrDefault(c => c.Type == JwtClaimTypes.Id)?.Value ?? string.Empty,
+                    RoleNane = JwtClaims.FirstOrDefault(c => c.Type == JwtClaimTypes.Role)?.Value ?? string.Empty,
                     UserNane = JwtClaims.FirstOrDefault(c => c.Type == JwtClaimTypes.Name)?.Value ?? string.Empty,
+                    Email = JwtClaims.FirstOrDefault(c => c.Type == JwtClaimTypes.Email
+                                               || c.Type == ClaimTypes.Email
+                                               || c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")?.Value ?? string.Empty,
+
+                    //ReferenceTokenId = JwtClaims.FirstOrDefault(c => c.Type == JwtClaimTypes.ReferenceTokenId)?.Value ?? string.Empty,
+                    RoleId = JwtClaims.FirstOrDefault(c => c.Type == "RoleId")?.Value ?? string.Empty,
                     Account = JwtClaims.FirstOrDefault(c => c.Type == "Account")?.Value ?? string.Empty,
-                    Email = JwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value ?? string.Empty,
-                    ReferenceTokenId = JwtClaims.FirstOrDefault(c => c.Type == JwtClaimTypes.ReferenceTokenId)?.Value ?? string.Empty,
                 };
             }
             return claimsDto;
