@@ -1,4 +1,6 @@
-﻿namespace CommonLibrary.DTOs
+﻿using static CommonLibrary.DTOs.PagedOperationDto;
+
+namespace CommonLibrary.DTOs
 {
     public class PageResponseDto
     {
@@ -27,10 +29,7 @@
         ///// </summary>
         public int PageSize { get; set; }
 
-        /// <summary>
-        /// 排序欄位
-        /// </summary>
-        public string OrderBy { get; set; } = "Id";
+        public List<SortOption> SortOptions { get; set; }
     }
 
 }

@@ -14,8 +14,12 @@ namespace CommonLibrary.DTOs
         /// </summary>
         public int PageSize { get; set; } = int.MaxValue;
 
-        public string OrderBy { get; set; } = "Id";
+        public List<SortOption> SortOptions { get; set; } = new List<SortOption> { new SortOption { Field = "Id", Desc = SortTypeEnum.Asc } };
 
-        public SortTypeEnum Desc { get; set; } = SortTypeEnum.Asc;
+        public class SortOption
+        {
+            public string Field { get; set; }
+            public SortTypeEnum Desc { get; set; }
+        }
     }
 }

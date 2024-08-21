@@ -15,9 +15,9 @@ namespace CommonLibrary.DTOs
 
         public int RememberLoginExpired { get; set; }
 
-        public DateTime NotBefore => DateTime.UtcNow;
+        public DateTime NotBefore => DateTime.Now;
 
-        public DateTime IssuedAt => DateTime.UtcNow;
+        public DateTime IssuedAt => DateTime.Now;
 
         public DateTime Expiration => IssuedAt.AddMinutes(Expired);
 
