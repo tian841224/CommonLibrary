@@ -21,7 +21,6 @@ namespace CommonLibrary.Extensions
             var stackTrace = new StackTrace();
             var frames = stackTrace.GetFrames();
 
-            // 找到第一个业务逻辑框架（跳过中间件和异常处理部分）
             var frame = frames.FirstOrDefault(f =>
                 f.GetMethod()!.DeclaringType != null &&
                 !f.GetMethod()!.DeclaringType!.FullName!.StartsWith("System.") &&

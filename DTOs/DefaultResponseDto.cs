@@ -12,12 +12,12 @@ namespace CommonLibrary.DTOs
         /// </summary>
         [JsonConverter(typeof(DateTimeConverter))]
 
-        public DateTime CreateTime { get;  set; } = DateTime.UtcNow;
+        public DateTime CreateTime { get;  set; } 
 
         /// <summary>
         /// 更新時間
         /// </summary>
         [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime UpdateTime { get;  set; } = DateTime.UtcNow;
+        public DateTime UpdateTime { get;  set; } 
     }
 }
