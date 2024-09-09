@@ -2,7 +2,7 @@
 
 namespace CommonLibrary.DTOs
 {
-    public class SortDto
+    public class BasicSortResponseDto : BasicResponseDto
     {
         /// <summary>
         /// 排序

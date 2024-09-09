@@ -4,6 +4,7 @@ using IdentityModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using SkiaSharp;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -20,12 +21,14 @@ namespace CommonLibrary.Services
         private readonly ILogger<IdentityService> _log;
         private readonly JwtConfig _jwtConfig;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IRedisService _redisService;
 
-        public IdentityService(IOptions<JwtConfig> jwtConfig, ILogger<IdentityService> log, IHttpContextAccessor httpContextAccessor)
+        public IdentityService(IOptions<JwtConfig> jwtConfig, ILogger<IdentityService> log, IHttpContextAccessor httpContextAccessor, IRedisService redisService)
         {
             _jwtConfig = jwtConfig.Value;
             _log = log;
             _httpContextAccessor = httpContextAccessor;
+            _redisService = redisService;
         }
 
         /// <summary>
@@ -104,136 +107,130 @@ namespace CommonLibrary.Services
             }
         }
 
-        ///// <summary>
-        ///// 取得驗證碼
-        ///// </summary>
-        ///// <param name="width"></param>
-        ///// <param name="height"></param>
-        ///// <returns></returns>
-        //public CaptchaDto GetCaptcha()
-        //{
-        //    // 生成驗證碼
-        //    var Captcha = GenerateCaptcha();
+        /// <summary>
+        /// 驗證驗證碼
+        /// </summary>
+        /// <param name="captcha"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task VerifyCaptchaAsync(string captcha, string captchaUserInput)
+        {
+            var cacheKey = CAPTCHA_CODE_PRE + captcha;
+            var cacheValue = await _redisService.redisDb.StringGetAsync(cacheKey);
+            if (string.IsNullOrEmpty(cacheValue))
+                throw new Exception("驗證碼已過期");
 
-        //    var result = new CaptchaDto
-        //    {
-        //        CaptchaCode = Guid.NewGuid().ToString("N").ToUpper(),
-        //        ImageBase64 = "data:image/png;base64," + Captcha.CaptchaBase64Data
-        //    };
+            var verifyResult = cacheValue.ToString().Equals(captchaUserInput, StringComparison.OrdinalIgnoreCase);
 
-        //    var cacheKey = CAPTCHA_CODE_PRE + result.CaptchaCode;
+            await _redisService.redisDb.StringGetDeleteAsync(cacheKey);
 
-        //    //await redisDb.StringSetAsync(cacheKey, Captcha.CaptchaCode, new TimeSpan(0, 5, 0));
+            if (verifyResult == false)
+                throw new Exception("圖形密碼不正確");
+        }
 
-        //    return result;
-        //}
+        /// <summary>
+        /// 取得驗證碼
+        /// </summary>
+        /// <returns></returns>
+        public CaptchaDto GetCaptcha()
+        {
+            // 生成驗證碼
+            var Captcha = GenerateCaptcha();
 
-        ///// <summary>
-        ///// 生成驗證碼
-        ///// </summary>
-        ///// <param name="width"></param>
-        ///// <param name="height"></param>
-        ///// <returns></returns>
-        //private CaptchaResult GenerateCaptcha(int width = 100, int height = 36)
-        //{
-        //    try
-        //    {
-        //        string captchaText = GenerateCode();
+            var result = new CaptchaDto
+            {
+                CaptchaCode = Guid.NewGuid().ToString("N").ToUpper(),
+                ImageBase64 = "data:image/png;base64," + Captcha.CaptchaBase64Data
+            };
 
-        //        using (var bitmap = new SKBitmap(width, height))
-        //        using (var canvas = new SKCanvas(bitmap))
-        //        {
-        //            canvas.Clear(SKColors.White);
+            var cacheKey = CAPTCHA_CODE_PRE + result.CaptchaCode;
 
-        //            // 添加背景噪點 (可选)
-        //            // AddNoise(canvas, width, height);
+            //await redisDb.StringSetAsync(cacheKey, Captcha.CaptchaCode, new TimeSpan(0, 5, 0));
 
-        //            // 為每個字符創建單獨的路徑
-        //            for (int i = 0; i < captchaText.Length; i++)
-        //            {
-        //                float fontSize = height * 0.7f; // 調整字體大小
-        //                using (var paint = new SKPaint
-        //                {
-        //                    Color = GetRandomColor(),
-        //                    IsAntialias = true,
-        //                    Style = SKPaintStyle.Fill,
-        //                    TextSize = fontSize,
-        //                    Typeface = SKTypeface.FromFamilyName("DejaVu Sans", SKFontStyle.Bold)
-        //                })
-        //                {
-        //                    float charWidth = width / captchaText.Length;
-        //                    float x = i * charWidth + (charWidth - paint.MeasureText(captchaText[i].ToString())) / 2;
-        //                    float y = (height + fontSize) / 2 - paint.FontMetrics.Descent;
+            return result;
+        }
 
-        //                    canvas.DrawText(captchaText[i].ToString(), x, y, paint);
-        //                }
-        //            }
+        private CaptchaResult GenerateCaptcha(int width = 100, int height = 36)
+        {
+            try
+            {
+                string captchaText = GenerateCode();
 
-        //            using (var image = SKImage.FromBitmap(bitmap))
-        //            using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
-        //            using (var ms = new MemoryStream())
-        //            {
-        //                data.SaveTo(ms);
-        //                return new CaptchaResult
-        //                {
-        //                    CaptchaCode = captchaText,
-        //                    CaptchaByteData = ms.ToArray()
-        //                };
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _log.LogError(ex.Message);
-        //        throw;
-        //    }
-        //}
+                using (var bitmap = new SKBitmap(width, height))
+                using (var canvas = new SKCanvas(bitmap))
+                {
+                    canvas.Clear(SKColors.White);
 
-        ///// <summary>
-        ///// 驗證驗證碼
-        ///// </summary>
-        ///// <param name="captcha"></param>
-        ///// <returns></returns>
-        ///// <exception cref="Exception"></exception>
-        //public async Task VerifyCaptchaAsync(string captcha, string captchaUserInput)
-        //{
-        //    var cacheKey = CAPTCHA_CODE_PRE + captcha;
-        //    string cacheValue = await redisDb.StringGetAsync(cacheKey);
-        //    if (string.IsNullOrEmpty(cacheValue))
-        //        throw new Exception("驗證碼已過期");
+                    // 增加背景燥點
+                    // AddNoise(canvas, width, height);
 
-        //    var verifyResult = cacheValue.ToString().Equals(captchaUserInput, StringComparison.OrdinalIgnoreCase);
+                    // 設定字體樣式
+                    var typeface = SKTypeface.FromFamilyName("Arial", SKFontStyle.Bold);
 
-        //    await redisDb.StringGetDeleteAsync(cacheKey);
+                    for (int i = 0; i < captchaText.Length; i++)
+                    {
+                        float fontSize = height * 0.7f; // 調整字體大小
+                        using (var paint = new SKPaint
+                        {
+                            Color = GetRandomColor(),
+                            IsAntialias = true,
+                            Style = SKPaintStyle.Fill,
+                            TextSize = fontSize,
+                            Typeface = typeface
+                        })
+                        {
+                            float charWidth = width / captchaText.Length;
+                            float x = i * charWidth;
+                            float y = (height + fontSize) / 2 - paint.FontMetrics.Descent;
 
-        //    if (verifyResult == false)
-        //        throw new Exception("圖形密碼不正確");
-        //}
+                            canvas.DrawText(captchaText[i].ToString(), x, y, paint);
+                        }
+                    }
 
-        ///// <summary>
-        ///// 亂數產生顏色
-        ///// </summary>
-        ///// <returns></returns>
-        //private static SKColor GetRandomColor()
-        //{
-        //    Random random = new Random();
-        //    return new SKColor((byte)random.Next(0, 100), (byte)random.Next(0, 100), (byte)random.Next(0, 100));
-        //}
+                    using (var image = SKImage.FromBitmap(bitmap))
+                    using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
+                    using (var ms = new MemoryStream())
+                    {
+                        data.SaveTo(ms);
+                        return new CaptchaResult
+                        {
+                            CaptchaCode = captchaText,
+                            CaptchaByteData = ms.ToArray()
+                        };
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.LogError(ex.Message);
+                throw;
+            }
+        }
 
-        ///// <summary>
-        ///// 亂數產生驗證碼
-        ///// </summary>
-        ///// <returns></returns>
-        //private static string GenerateCode(int length = 4)
-        //{
-        //    const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        //    var random = new Random();
-        //    var code = new char[length];
-        //    for (int i = 0; i < length; i++)
-        //    {
-        //        code[i] = chars[random.Next(chars.Length)];
-        //    }
-        //    return new string(code);
-        //}
+        /// <summary>
+        /// 亂數產生顏色
+        /// </summary>
+        /// <returns></returns>
+        private static SKColor GetRandomColor()
+        {
+            Random random = new Random();
+            return new SKColor((byte)random.Next(0, 256), (byte)random.Next(0, 256), (byte)random.Next(0, 256));
+        }
+
+        /// <summary>
+        /// 亂數產生驗證碼
+        /// </summary>
+        /// <returns></returns>
+        private static string GenerateCode(int length = 4)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            var random = new Random();
+            var code = new char[length];
+            for (int i = 0; i < length; i++)
+            {
+                code[i] = chars[random.Next(chars.Length)];
+            }
+            return new string(code);
+        }
     }
 }

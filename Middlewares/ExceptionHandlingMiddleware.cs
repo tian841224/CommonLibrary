@@ -93,44 +93,44 @@ namespace CommonLibrary.Middlewares
                 ErrorMsg = exception.Message,
             };
 
-            string className = string.Empty;
+            string className = exception.GetType().Name;
+            HttpStatusCode statusCode;
 
-            if (exception is ApiException apiException)
+            switch (exception)
             {
-                className = apiException.className;
-                response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                _logger.LogInformation($"{className}-{exception.Message}");
-                var result = JsonSerializer.Serialize(errorResponse);
-                await context.Response.WriteAsync(result);
+                case ApiException apiException:
+                    // Handle custom ApiException and assign custom status code
+                    className = apiException.ClassName;
+                    statusCode = apiException.StatusCode;
+                    _logger.LogInformation($"{className}-{exception.Message}");
+                    break;
+
+                case ArgumentNullException _:
+                case ArgumentException _:
+                    statusCode = HttpStatusCode.BadRequest;
+                    break;
+
+                case UnauthorizedAccessException _:
+                    statusCode = HttpStatusCode.Unauthorized;
+                    break;
+
+                case NotImplementedException _:
+                    statusCode = HttpStatusCode.NotImplemented;
+                    break;
+
+                default:
+                    statusCode = HttpStatusCode.InternalServerError;
+                    break;
             }
-            else
-            {
-                switch (exception)
-                {
-                    case ArgumentNullException _:
-                    case ArgumentException _:
-                        response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        break;
-                    case UnauthorizedAccessException _:
-                        response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                        break;
-                    case NotImplementedException _:
-                        response.StatusCode = (int)HttpStatusCode.NotImplemented;
-                        break;
-                    case ApiException _:
-                        response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                        break;
-                    default:
-                        response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                        break;
-                }
+
+            response.StatusCode = (int)statusCode;
 
 
-                _logger.LogError($"{className}-{exception.Message}");
+            _logger.LogError($"{className}-{exception.Message}");
 
-                var result = JsonSerializer.Serialize(errorResponse);
-                await context.Response.WriteAsync(result);
-            }
+            var result = JsonSerializer.Serialize(errorResponse);
+            await context.Response.WriteAsync(result);
         }
     }
 }
+

@@ -1,10 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using CommonLibrary.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 
 namespace CommonLibrary.Services
 {
-    public class RedisService
+    public class RedisService : IRedisService
     {
 
         private readonly IConfiguration _configuration;
@@ -53,7 +54,12 @@ namespace CommonLibrary.Services
         {
             try
             {
-                await redisDb.KeyDeleteAsync(_lockKey);
+                // 只有當 redisKey 與鎖的值相符時，才釋放鎖
+                var currentValue = await redisDb.StringGetAsync(_lockKey);
+                if (currentValue == redisKey)
+                {
+                    await redisDb.KeyDeleteAsync(_lockKey);
+                }
             }
             catch (Exception ex)
             {

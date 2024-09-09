@@ -1,9 +1,9 @@
-﻿using CommonLibrary.Extensions;
-using System.Text.Json.Serialization;
-
-namespace CommonLibrary.DTOs
+﻿namespace CommonLibrary.DTOs
 {
-    public class DefaultResponseDto
+    using System.Text.Json.Serialization;
+    using CommonLibrary.Extensions;
+
+    public class BasicResponseDto
     {
         public int Id { get; set; }
 
@@ -12,12 +12,12 @@ namespace CommonLibrary.DTOs
         /// </summary>
         [JsonConverter(typeof(DateTimeConverter))]
 
-        public DateTime CreateTime { get;  set; } 
+        public virtual DateTime CreateTime { get;  set; } 
 
         /// <summary>
         /// 更新時間
         /// </summary>
         [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime UpdateTime { get;  set; } 
+        public virtual DateTime UpdateTime { get;  set; } 
     }
 }
