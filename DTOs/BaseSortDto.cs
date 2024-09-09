@@ -1,6 +1,6 @@
 ﻿namespace CommonLibrary.DTOs
 {
-    public class BasicSortDto : BasicDto
+    public class BaseSortDto : BaseDto
     {
         /// <summary>
         /// 排序

@@ -2,7 +2,7 @@
 
 namespace CommonLibrary.DTOs
 {
-    public class BasicDto
+    public class BaseDto
     {
         [Required]
         public virtual int Id { get; set; }

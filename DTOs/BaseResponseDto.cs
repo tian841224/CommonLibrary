@@ -3,7 +3,7 @@
     using System.Text.Json.Serialization;
     using CommonLibrary.Extensions;
 
-    public class BasicResponseDto
+    public class BaseResponseDto
     {
         public int Id { get; set; }
 
