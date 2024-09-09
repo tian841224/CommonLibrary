@@ -4,6 +4,7 @@ namespace CommonLibrary.Interfaces
 {
     public interface IRedisService
     {
+        /// <summary> 提供原生功能 </summary>
         IDatabase redisDb { get; }
 
         /// <summary> Redis上鎖 </summary>

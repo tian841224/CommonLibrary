@@ -16,6 +16,9 @@ namespace CommonLibrary.Services
         private readonly string redisKey;
         private readonly TimeSpan _expiry = new TimeSpan(0, 1, 00);//設定失效時間為1分鐘
 
+        /// <summary>
+        /// 提供redis原始功能
+        /// </summary>
         public IDatabase redisDb => _redisDb.Value;
 
         public RedisService(IConfiguration configuration, ILogger<RedisService> log)
@@ -60,7 +63,7 @@ namespace CommonLibrary.Services
                 {
                     await redisDb.KeyDeleteAsync(_lockKey);
                 }
-            }
+            } 
             catch (Exception ex)
             {
                 _log.LogError(ex.Message);

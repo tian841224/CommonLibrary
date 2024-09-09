@@ -2,7 +2,7 @@
 
 namespace CommonLibrary.Entities
 {
-    public class SortDefaultEntity : BaseEntity
+    public class BaseSortEntity : BaseEntity
     {
         /// <summary>
         /// 排序
